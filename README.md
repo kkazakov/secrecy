@@ -1,8 +1,16 @@
 My Build
 =======
 
-I have forked https://github.com/SecrecySupportTeam/secrecy , because there are some thing I want this app to be able to do,
+I have forked https://github.com/SecrecySupportTeam/secrecy , because there are some things I want this app to be able to do,
 but I'm not sure that the main developer will accept. I also don't like how the current app looks and that's another reason to fork it.
+
+What I've done so far?
+- Fixed several annoying crashes.
+- Fixed bug which (when started for the first time) did not show the "Create vault" and "Restore from backup" buttons.
+- Added saving view state ( list or gallery ) per vault. It will be in the same state when opened next time.
+- Added animated GIF support.
+
+I really hope you enjoy it :)
 
 secrecy (original Readme)
 =======================
