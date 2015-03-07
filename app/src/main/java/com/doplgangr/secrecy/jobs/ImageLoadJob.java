@@ -9,8 +9,13 @@ import com.doplgangr.secrecy.events.ImageLoadDoneEvent;
 import com.doplgangr.secrecy.filesystem.encryption.SecrecyCipherInputStream;
 import com.doplgangr.secrecy.filesystem.files.EncryptedFile;
 import com.doplgangr.secrecy.Util;
+import com.felipecsl.gifimageview.library.GifImageView;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.ByteArrayOutputStream;
 
 import de.greenrobot.event.EventBus;
 import uk.co.senab.photoview.PhotoView;
@@ -18,18 +23,20 @@ import uk.co.senab.photoview.PhotoView;
 public class ImageLoadJob extends Job {
     public static final int PRIORITY = 10;
     private final PhotoView imageView;
+    private final GifImageView gifImageView;
     private final EncryptedFile encryptedFile;
     private final ProgressBar pBar;
     private final Integer mNum;
     private boolean isObsolet = false;
     private final BitmapFactory.Options options;
 
-    public ImageLoadJob(Integer mNum, EncryptedFile encryptedFile, PhotoView imageView,
+    public ImageLoadJob(Integer mNum, EncryptedFile encryptedFile, PhotoView imageView, GifImageView gifImageView,
                         ProgressBar pBar) {
         super(new Params(PRIORITY));
         this.mNum = mNum;
         this.encryptedFile = encryptedFile;
         this.imageView = imageView;
+        this.gifImageView = gifImageView;
         this.pBar = pBar;
         options = new BitmapFactory.Options();
     }
@@ -74,15 +81,21 @@ public class ImageLoadJob extends Job {
 
                 imageStream = encryptedFile.readStream();
 
+                final String mimeType = Util.getFileTypeFromExtension(encryptedFile.getFileExtension());
+                final boolean isGifFile = (mimeType.equals("image/gif"));
+
                 if (!isObsolet) {
-                    Bitmap bitmap = BitmapFactory.decodeStream(imageStream, null, options);
-                    EventBus.getDefault().post(new ImageLoadDoneEvent(mNum, imageView, bitmap, pBar));
+                    Bitmap bitmap = !isGifFile ? BitmapFactory.decodeStream(imageStream, null, options) : null;
+                    byte[] bytes = isGifFile ? IOUtils.toByteArray(imageStream) : null;
+
+                    EventBus.getDefault().post(new ImageLoadDoneEvent(mNum, imageView, bitmap, gifImageView, bytes, pBar,
+                            mimeType));
 
                 } else {
-                    EventBus.getDefault().post(new ImageLoadDoneEvent(null, null, null, null));
+                    EventBus.getDefault().post(new ImageLoadDoneEvent(null, null, null, null, null, null, null));
                 }
             } catch (OutOfMemoryError e) {
-                EventBus.getDefault().post(new ImageLoadDoneEvent(null, null, null, null));
+                EventBus.getDefault().post(new ImageLoadDoneEvent(null, null, null, null, null, null, null));
             }
         }
     }

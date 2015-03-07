@@ -2,6 +2,7 @@ package com.doplgangr.secrecy.views;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -26,6 +27,9 @@ import com.doplgangr.secrecy.filesystem.encryption.Vault;
 import com.doplgangr.secrecy.jobs.ImageLoadJob;
 import com.doplgangr.secrecy.R;
 import com.doplgangr.secrecy.Util;
+import com.felipecsl.gifimageview.library.GifImageView;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -35,6 +39,7 @@ public class FilePhotoFragment extends FragmentActivity {
 
     private static Activity context;
     private ViewPager mViewPager;
+    private int currentIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,50 @@ public class FilePhotoFragment extends FragmentActivity {
         int itemNo = extras.getInt(Config.gallery_item_extra);
         if (itemNo < (mViewPager.getAdapter().getCount())) { //check if requested item is in bound
             mViewPager.setCurrentItem(itemNo);
+            currentIndex = itemNo;
+        }
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Util.log("page selected " + position);
+
+                updateGifAnimation(position);
+
+                currentIndex = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void updateGifAnimation(int pos) {
+        if (currentIndex != pos)
+            changeAnimationState(currentIndex, false);
+
+        changeAnimationState(pos, true);
+    }
+
+    private void changeAnimationState(int pos, boolean start) {
+        if (pos == -1) {
+            return;
+        }
+
+        View v = mViewPager.findViewWithTag(pos);
+        if (v != null) {
+            GifImageView gifImageView = (GifImageView) v.findViewWithTag("gifView");
+
+            if (gifImageView != null) {
+                if (start) gifImageView.startAnimation(); else gifImageView.stopAnimation();
+            }
         }
     }
 
@@ -72,11 +121,13 @@ public class FilePhotoFragment extends FragmentActivity {
     public void onDestroy(){
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+
+        changeAnimationState(currentIndex, false);
     }
 
     public void onEventMainThread(ImageLoadDoneEvent event) {
         Util.log("Recieving imageview and bm");
-        if (event.bitmap == null) {
+        if (event.bitmap == null && event.gifBytes == null) {
             Util.alert(context,
                     context.getString(R.string.Error__out_of_memory),
                     context.getString(R.string.Error__out_of_memory_message),
@@ -90,7 +141,18 @@ public class FilePhotoFragment extends FragmentActivity {
             return;
         }
         try {
-            event.imageView.setImageBitmap(event.bitmap);
+
+            if (event.mimeType.equals("image/gif")) {
+                event.gifImageView.setBytes(event.gifBytes);
+
+                if (event.mNum == currentIndex) {
+                    event.gifImageView.startAnimation();
+                }
+
+            } else {
+                event.imageView.setImageBitmap(event.bitmap);
+            }
+
         } catch (OutOfMemoryError e) {
             Util.alert(context,
                     context.getString(R.string.Error__out_of_memory),
@@ -163,20 +225,33 @@ public class FilePhotoFragment extends FragmentActivity {
                                      Bundle savedInstanceState) {
                 Util.log("onCreateView!!");
                 final RelativeLayout relativeLayout = new RelativeLayout(container.getContext());
+                relativeLayout.setTag(mNum);
+
                 final EncryptedFile encryptedFile = encryptedFiles.get(mNum);
                 final PhotoView photoView = new PhotoView(container.getContext());
-                relativeLayout.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                try {
-                    photoView.setImageBitmap(encryptedFile.getEncryptedThumbnail().getThumb(150));
-                } catch (SecrecyFileException e) {
-                    Util.log("No bitmap available!");
+                final GifImageView gifImageView = new GifImageView(container.getContext());
+                gifImageView.setTag("gifView");
+
+                final String mimeType = Util.getFileTypeFromExtension(encryptedFile.getFileExtension());
+                final boolean isAnimatedGif = mimeType.equals("image/gif");
+
+                relativeLayout.addView(isAnimatedGif ? gifImageView : photoView,
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+                if (!isAnimatedGif) {
+                    try {
+                        photoView.setImageBitmap(encryptedFile.getEncryptedThumbnail().getThumb(150));
+                    } catch (SecrecyFileException e) {
+                        Util.log("No bitmap available!");
+                    }
                 }
+
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                 final ProgressBar pBar = new ProgressBar(container.getContext());
                 pBar.setIndeterminate(false);
                 relativeLayout.addView(pBar, layoutParams);
-                imageLoadJob = new ImageLoadJob(mNum, encryptedFile, photoView, pBar);
+                imageLoadJob = new ImageLoadJob(mNum, encryptedFile, photoView, gifImageView, pBar);
                 CustomApp.jobManager.addJobInBackground(imageLoadJob);
                 return relativeLayout;
             }

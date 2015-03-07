@@ -23,18 +23,27 @@ package com.doplgangr.secrecy.events;
 import android.graphics.Bitmap;
 import android.widget.ProgressBar;
 
+import com.felipecsl.gifimageview.library.GifImageView;
+
 import uk.co.senab.photoview.PhotoView;
 
 public class ImageLoadDoneEvent {
     public final Integer mNum;
     public final PhotoView imageView;
     public final Bitmap bitmap;
+    public final GifImageView gifImageView;
+    public final byte[] gifBytes;
     public final ProgressBar progressBar;
+    public final String mimeType;
 
-    public ImageLoadDoneEvent(Integer mNum, PhotoView imageView, Bitmap bitmap, ProgressBar progressBar) {
+    public ImageLoadDoneEvent(Integer mNum, PhotoView imageView, Bitmap bitmap, GifImageView gifImageView, byte[] gifBytes,
+                              ProgressBar progressBar, String mimeType) {
         this.mNum = mNum;
         this.imageView = imageView;
         this.bitmap = bitmap;
+        this.gifImageView = gifImageView;
+        this.gifBytes = gifBytes;
         this.progressBar = progressBar;
+        this.mimeType = mimeType;
     }
 }

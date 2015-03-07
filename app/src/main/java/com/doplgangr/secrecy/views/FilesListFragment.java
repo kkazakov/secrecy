@@ -39,6 +39,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,7 +156,8 @@ public class FilesListFragment extends FileViewer {
         if (context == null) {
             return;
         }
-        context.getSupportActionBar().setTitle(vault);
+        if (context.getSupportActionBar() != null)
+            context.getSupportActionBar().setTitle(vault);
 
         gridLayout = new GridLayoutManager(context, 3);
         listAdapter = new FilesListAdapter(context, false);
@@ -365,13 +367,14 @@ public class FilesListFragment extends FileViewer {
                             select(position);
                             return;
                         }
+                        EncryptedFile encryptedFile = mAdapter.getItem(position);
                         if (isGallery) {
                             Intent intent = new Intent(context, FilePhotoFragment.class);
                             intent.putExtra(Config.gallery_item_extra, position);
                             FilesActivity.onPauseDecision.startActivity();
                             startActivity(intent);
                         } else {
-                            EncryptedFile encryptedFile = mAdapter.getItem(position);
+
                             if (!encryptedFile.getIsDecrypting()) {
                                 switchView(view, R.id.DecryptLayout);
                                 Runnable onFinish = new Runnable() {
