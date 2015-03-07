@@ -471,6 +471,8 @@ public class FilesListFragment extends FileViewer {
             recyclerView.setLayoutManager(linearLayout);
         }
         recyclerView.setAdapter(mAdapter);
+
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     void changePassphrase() {
