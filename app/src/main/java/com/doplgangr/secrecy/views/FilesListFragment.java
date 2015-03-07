@@ -27,6 +27,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -110,14 +111,28 @@ public class FilesListFragment extends FileViewer {
         recyclerView = (RecyclerView) view.findViewById(R.id.file_list_recycler_view);
         mTag = (TextView) view.findViewById(R.id.tag);
 
+
         linearLayout = new LinearLayoutManager(context);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(linearLayout);
-        recyclerView.setAdapter(mAdapter);
 
         ActionBar ab = ((ActionBarActivity) getActivity()).getSupportActionBar();
         if (ab != null)
             ab.setTitle(vault);
+
+        isGallery = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("is_gallery_" + vault, false);
+
+        mTag.setText(isGallery ? R.string.Page_header__gallery : R.string.Page_header__files);
+        if (isGallery) {
+            mAdapter = galleryAdapter;
+            recyclerView.setLayoutManager(gridLayout);
+        } else {
+            mAdapter = listAdapter;
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("vault_sort", false)){
+                mAdapter.sort();
+            }
+            recyclerView.setLayoutManager(linearLayout);
+        }
+        recyclerView.setAdapter(mAdapter);
 
         return view;
     }
@@ -459,6 +474,10 @@ public class FilesListFragment extends FileViewer {
 
     void switchInterface() {
         isGallery = !isGallery;
+
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        edit.putBoolean("is_gallery_" + vault, isGallery).commit();
+
         mTag.setText(isGallery ? R.string.Page_header__gallery : R.string.Page_header__files);
         if (isGallery) {
             mAdapter = galleryAdapter;
