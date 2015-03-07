@@ -1,8 +1,3 @@
-secrecy
-=======
-[![Build Status](https://travis-ci.org/kkazakov/secrecy.svg)](https://travis-ci.org/kkazakov/secrecy)
-
-
 My Build
 =======
 
