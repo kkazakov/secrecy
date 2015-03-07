@@ -112,6 +112,8 @@ public class VaultsListFragment extends Fragment {
             return;
         }
         imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        setHasOptionsMenu(true);
     }
 
     @Override
