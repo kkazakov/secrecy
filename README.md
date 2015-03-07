@@ -1,6 +1,16 @@
 secrecy
 =======
-[![Build Status](https://travis-ci.org/SecrecySupportTeam/secrecy.svg)](https://travis-ci.org/SecrecySupportTeam/secrecy)
+[![Build Status](https://travis-ci.org/kkazakov/secrecy.svg)](https://travis-ci.org/kkazakov/secrecy)
+
+
+My Build
+=======
+
+I have forked https://github.com/SecrecySupportTeam/secrecy , because there are some thing I want this app to be able to do,
+but I'm not sure that the main developer will accept. I also don't like how the current app looks and that's another reason to fork it.
+
+secrecy (original Readme)
+=======================
 
 Secrecy is where you can safely put your files without worrying that others will see it... They just can't.
 
