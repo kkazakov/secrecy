@@ -257,6 +257,16 @@ public class FilesListAdapter extends RecyclerView.Adapter<FilesListAdapter.View
                 if (name.equals(encryptedFile.getDecryptedFileName()) && (thumbnail != null) && (viewHolder.thumbnail != null)) {
                     viewHolder.thumbnail.setImageBitmap(thumbnail);   // bind thumbnail in UI thread
                     viewHolder.thumbnail.setVisibility(View.VISIBLE);
+
+                    String mimeType = Util.getFileTypeFromExtension(encryptedFile.getFileExtension());
+
+                    if (viewHolder.overlayIcon != null) {
+                        if (mimeType.equals("image/gif")) {
+                            viewHolder.overlayIcon.setVisibility(View.VISIBLE);
+                        } else {
+                            viewHolder.overlayIcon.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
         }
@@ -273,6 +283,7 @@ public class FilesListAdapter extends RecyclerView.Adapter<FilesListAdapter.View
         public final FrameLayout frame;
         public final ViewAnimator animator;
         public final ProgressBar progressBar;
+        public final ImageView overlayIcon;
         public int page;
 
         public ViewHolder(View itemView) {
@@ -286,6 +297,8 @@ public class FilesListAdapter extends RecyclerView.Adapter<FilesListAdapter.View
             frame.setTag(this);
             animator = (ViewAnimator) itemView.findViewById(R.id.viewAnimator);
             progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            overlayIcon = (ImageView) itemView.findViewById(R.id.overlayIcon);
+
             frame.setOnClickListener(this);
             frame.setOnLongClickListener(this);
         }

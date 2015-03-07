@@ -46,6 +46,13 @@
                 android:background="@color/transparent"
                 android:scaleType="centerCrop" />
 
+            <ImageView
+                android:id="@+id/overlayIcon"
+                android:src="@drawable/ic_action_play"
+                android:layout_width="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_height="wrap_content" />
+
         </RelativeLayout>
 
 
