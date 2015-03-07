@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
@@ -171,7 +172,13 @@ public class VaultsListFragment extends Fragment {
 
     private void refresh(){
         VaultHolder.getInstance().clear();
-        loadVaultList();
+
+        new Handler(context.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                loadVaultList();
+            }
+        });
     }
 
     private void loadVaultList(){
