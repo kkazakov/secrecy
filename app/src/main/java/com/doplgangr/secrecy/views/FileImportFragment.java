@@ -25,7 +25,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 
 import com.doplgangr.secrecy.R;
 
@@ -34,12 +36,20 @@ public class FileImportFragment extends VaultsListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.activity_list_vault, container, false);
         addFilepBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         ActionBar ab = ((ActionBarActivity) getActivity()).getSupportActionBar();
         if (ab != null)
             ab.setTitle(R.string.Dialog_header__import_files);
+
+
+        mLinearView = (LinearLayout) view.findViewById(R.id.list);
+        mScrollView = (ScrollView) view.findViewById(R.id.scrollView);
+        nothing = view.findViewById(R.id.nothing);
+
+        loadVaultList();
 
         return view;
     }

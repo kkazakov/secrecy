@@ -70,9 +70,9 @@ import de.greenrobot.event.EventBus;
 public class VaultsListFragment extends Fragment {
     //Vault restore module
     private static final int REQUESTCODE = 1203; //Arbitrary
-    private LinearLayout mLinearView;
-    private ScrollView mScrollView;
-    private View nothing;
+    protected LinearLayout mLinearView;
+    protected ScrollView mScrollView;
+    protected View nothing;
     private ActionBarActivity context;
     VaultsAdapter adapter;
     private OnVaultSelectedListener mOnVaultSelected;
@@ -179,9 +179,10 @@ public class VaultsListFragment extends Fragment {
                 loadVaultList();
             }
         });
+
     }
 
-    private void loadVaultList(){
+    protected void loadVaultList(){
         if (mLinearView != null) {
             mLinearView.removeAllViews();
         }
