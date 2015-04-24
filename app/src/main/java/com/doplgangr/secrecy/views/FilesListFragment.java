@@ -470,6 +470,9 @@ public class FilesListFragment extends FileViewer {
             case R.id.action_add_file:
                 addFile();
                 return true;
+            case R.id.action_add_folder:
+                createFolder();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
             }
@@ -514,6 +517,22 @@ public class FilesListFragment extends FileViewer {
                         progressDialog.setCancelable(false);
                         progressDialog.show();
                         changePassphraseInBackground(oldPassphrase, newPassphrase, confirmNewPassphrase, progressDialog);
+                    }
+                })
+                .setNegativeButton(R.string.CANCEL, Util.emptyClickListener)
+                .show();
+    }
+
+    void createFolder() {
+        final View dialogView = View.inflate(context, R.layout.add_folder, null);
+        new AlertDialog.Builder(context)
+                .setTitle(getString(R.string.Vault__create_new_folder))
+                .setView(dialogView)
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String newFolderName = ((EditText) dialogView.findViewById(R.id.folderName)).getText().toString();
+
+                        Util.log("Create folder " + newFolderName);
                     }
                 })
                 .setNegativeButton(R.string.CANCEL, Util.emptyClickListener)

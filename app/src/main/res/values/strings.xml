@@ -76,6 +76,9 @@
     <string name="Settings__performance">Performance</string>
     <string name="Settings_sort_vault_content">List items are sorted alphabetically</string>
     <string name="Settings_sort_vault_content_message">Sort vault list items</string>
+    <string name="Vault__create_new_folder">New folder</string>
+    <string name="Vailt__rename_folder">Rename folder</string>
+    <string name="Vault__folder_name">Folder name</string>
     <string-array name="array_image_size_entries">
         <item>Small</item>
         <item>Medium</item>
